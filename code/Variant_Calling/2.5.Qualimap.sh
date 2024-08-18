@@ -18,14 +18,17 @@ echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
 # Define the main output directory where all job-specific directories are located
 output_dir=$VC_results/Quality_Control/mapping/
+mkdir -p ${output_dir}
 cd ${output_dir}
-bam_dir=
-dedup_bam_dir=
+bam_dir=${VC_results}/2.Alignment/
+dedup_bam_dir=${VC_results}/3.Cleaning/
 export JAVA_OPTS="-Xms1G -Xmx8G"
+ml python
 ml miniconda3 
 eval "$(conda shell.bash hook)"
 conda activate ${my_softwares}/qualimap/env
-qualimap bamqc -bam *.marked_duplicates.bam
+qualimap bamqc -bam $dedup_bam_dir/*.marked_duplicates.bam
+qualimap bamqc -bam $bam_dir/*.bam
 conda deactivate
 conda activate ${my_softwares}/multiqc/env
 multiqc ./

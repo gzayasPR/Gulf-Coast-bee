@@ -16,10 +16,9 @@ echo "Code Directory: $VC_code"
 echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
 
-ref_genome=${VC_data}/final_assembly/Hesperapis_oraria_2.curatedScaff.clean_sort_rename_nuc.fasta
 
-clean_dir=${VC_results}/3.Cleaning_V2/
-output_dir=${VC_results}/3.5.Intial_calling_V2/
+clean_dir=${VC_results}/3.Cleaning/
+output_dir=${VC_results}/3.5.Intial_calling/
 mkdir -p ${output_dir}
 # Define the path to the gvcf_list.txt
 gvcf_list=${output_dir}/gvcf_list.txt
@@ -32,7 +31,7 @@ ml bcftools
 for IID in ${clean_dir}*g.vcf.gz; do
   name=$(basename ${IID} .g.vcf.gz)
    echo -e "${name}\t${IID}" >> $gvcf_list
-  # bcftools index -f ${IID}
+   bcftools index -f ${IID}
 done
 
 # Generate the interval file (genome_intervals.bed or genome_intervals.list)

@@ -18,18 +18,17 @@ echo "Results Directory: $VC_results"
 
 ref_genome=${VC_data}/final_assembly/Hesperapis_oraria_2.curatedScaff.clean_sort_rename_nuc.fasta
 
-vcf_dir=${VC_results}/3.5.Intial_calling_V2/
-output_dir=${VC_results}/3.5.Intial_calling_V2/Merged_output/
+vcf_dir=${VC_results}/3.5.Intial_calling/
+output_dir=${VC_results}/3.5.Intial_calling/Merged_output/
 mkdir -p ${output_dir}
 # Define the path to the gvcf_list.txt
 vcf_list=${output_dir}/vcf_list.txt
-#rm -f $vcf_list
-# Iterate over each GVCF file and add to the list
-
-#for vcf in $(ls ${vcf_dir}/sorted_genome_intervals_*.vcf); do
-#    name=$(basename ${IID} .vcf)
-#    echo -e "${vcf}" >> $vcf_list
-#done
+rm -f $vcf_list
+# Iterate over each GVCF file and add to the list in numerical order
+for vcf in $(ls ${vcf_dir}/sorted_genome_intervals_*.vcf | sort -V); do
+    name=$(basename ${vcf} .vcf)
+    echo -e "${vcf}" >> $vcf_list
+done
 ml python
 ml gatk
 gatk  --java-options "-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads=48" GatherVcfs -I $vcf_list -O ${output_dir}/combined.vcf
@@ -49,10 +48,4 @@ bcftools view ${input_vcf} | bcftools norm -m -any -f ${ref_genome} -Oz -o ${out
 # Index the output VCF file
 bcftools index ${output_vcf}
 ml vcftools
-vcftools --gzvcf ${output_dir}/fixed_input.vcf.gz --min-meanDP 5 --minQ 9  --max-missing 1 --out ${output_dir}/fixed_missing.25 --recode --recode-INFO-all
-
-cd $r_library
-name=intial.calling
-
-ml r/4.4.0
-Rscript $VC_code/scripts/Filter.Het.R ${output_dir} ${output_dir}/fixed_missing.25.recode.vcf $meta_data $name
+vcftools --gzvcf ${output_dir}/fixed_input.vcf.gz --min-meanDP 10 --minQ 20  --max-missing 1 --out ${output_dir}/fixed_missing.25 --recode --recode-INFO-all

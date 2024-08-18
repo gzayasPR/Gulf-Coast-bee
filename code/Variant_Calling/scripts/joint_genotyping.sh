@@ -83,10 +83,7 @@ echo "Finished SortVcf"
 echo "$name processed final vcf is at ${output_dir}/sorted_${name}.vcf"
 
 
-cd $r_library
 
-ml r/4.4.0
-Rscript $VC_code/scripts/Filter.Het.R ${output_dir} ${output_dir}/sorted_${name}.vcf $meta_data sorted_${name}
 
 
 

@@ -39,7 +39,7 @@ samtools index  -@ 48 ${output_dir}/${name}.marked_duplicates.bam
 echo "Finished Marking Duplicates"
 ml miniconda3 
 eval "$(conda shell.bash hook)"
-conda activate /project/beenome100/conda_envs/qualimap
+conda activate ${my_softwares}/qualimap/env
 export JAVA_OPTS="-Xms4G -Xmx32G" 
 echo "starting qualimap"
 qualimap bamqc -bam ${output_dir}/${name}.marked_duplicates.bam 
