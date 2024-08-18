@@ -1,0 +1,8 @@
+# Ignore everything in the data, results, and softwares directories
+data/
+results/
+softwares/
+
+# Ignore specific file types in the code directory
+code/*.err
+code/*.out
