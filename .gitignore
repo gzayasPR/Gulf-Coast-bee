@@ -4,5 +4,8 @@ results/
 softwares/
 
 # Ignore specific file types in the code directory
-code/*.err
-code/*.out
+code/**/*.err
+code/**/*.out
+code/**/*_output/
+
+.ipynb_checkpoints/ 
