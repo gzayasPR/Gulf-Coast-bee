@@ -45,8 +45,10 @@ echo "Input 7 : Number of ks: $ks"
 echo "Input 8 : Chosen K: $chosen_k"
 echo "Input 9: Output_dir: $out_dir"
 
-angsd_dir=${my_softwares}/angsd/
+ngs_dir=${my_softwares}/NGSadmix
 mkdir -p $out_dir
+
+source ~/.bashrc
 
 af_den=$((${N_ind} * 2))
 maf_num=2
@@ -54,7 +56,7 @@ maf=$(echo "scale=2; $maf_num / $af_den" | bc)
 echo ${maf}
 for K in $(seq 1 $ks); do
     for rep in $(seq 1 $reps); do
-        $angsd_dir/misc/NGSadmix -likes ${beagle_file} -K $K -o ${out_dir}/myoutfiles.k$K.rep$rep -minMaf ${maf}
+        $ngs_dir -likes ${beagle_file} -K $K -o ${out_dir}/myoutfiles.k$K.rep$rep -minMaf ${maf}
     done
 done
 

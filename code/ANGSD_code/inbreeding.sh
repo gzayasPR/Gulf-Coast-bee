@@ -25,18 +25,21 @@ echo "Results Directory: $ANGSD_results"
 
 out_dir=${ANGSD_results}/inbreeding/
 mkdir -p $out_dir
-angsd_dir=${my_softwares}/angsd
+angsd_dir=${my_softwares}/angsd/env
 ngsRelate_dir=${my_softwares}/ngsRelate
 bam_dir=${proj_dir}/results/Variant_Calling/3.Cleaning/
-cat ${bam_filelist}
 bam_filelist="${ANGSD_results}/ANGSD_out/female/bam.file"
+cat ${bam_filelist}
 angsd_beagle_mafs=${ANGSD_results}/ANGSD_out/females/females.mafs.gz
 N_ind=$(wc -l ${bam_filelist} | awk '{print $1}')
 min_dp=$((3 * $N_ind))
 max_dp=$((50 * $N_ind))
 min_ind=$(($N_ind - 5))
 
-$angsd_dir/angsd -bam ${bam_filelist} \
+source ~/.bashrc
+ml miniconda3
+conda activate $angsd_dir
+angsd -bam ${bam_filelist} \
     -dosnpstat 1 \
     -doHWE 1 \
     -GL 2 \

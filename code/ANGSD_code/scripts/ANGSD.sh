@@ -27,7 +27,7 @@ export PATH=${my_softwares}/bin:$PATH
 export LD_LIBRARY_PATH=${my_softwares}/lib:$LD_LIBRARY_PATH
 export CFLAGS="-I${my_softwares}/include"
 export LDFLAGS="-L${my_softwares}/lib"
-angsd_dir=${my_softwares}/angsd
+angsd_dir=${my_softwares}/angsd/env
 
 echo "Input 1 : Code Directory: $ANGSD_code"
 echo "Input 2 :  Name: ${name}"
@@ -42,8 +42,11 @@ rm -f $out_dir/*
 cp ${bam_filelist} $out_dir/bam.file
 min_dp=$((3 * $N_ind))
 max_dp=$((50 * $N_ind))
+source ~/.bashrc
+ml miniconda3
+conda activate $angsd_dir
 
-$angsd_dir/angsd  -bam $out_dir/bam.file \
+angsd  -bam $out_dir/bam.file \
     -dosnpstat 1 \
     -gl 1 \
     -doGlf 2 \

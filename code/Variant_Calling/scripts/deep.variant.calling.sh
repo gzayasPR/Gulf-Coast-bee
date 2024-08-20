@@ -18,7 +18,18 @@ ref_genome=$3
 known_vcf=$4
 ploidy=$5
 output_dir=$6/DeepVariant/
-deep_variant=/project/90daydata/beenome100/hesperapis_oraria_genomics/Hesperapis_oraria_Pop_genomics/code/DeepVariant
+deep_variant=$7/DeepVariant
+
+# Echo the inputs
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "BAM Directory: ${bam_dir}"
+echo "Reference Genome: ${ref_genome}"
+echo "Known VCF: ${known_vcf}"
+echo "Ploidy: ${ploidy}"
+echo "Output Directory: ${output_dir}"
+echo "DeepVariant Directory: ${deep_variant}"
+
 mkdir -p ${output_dir}
 ml miniconda3
 ml apptainer
@@ -33,7 +44,7 @@ export APPTAINER_TMPDIR=$TMPDIR
 scaffolds=$(awk '{printf "%s%s",sep,$1; sep=","} END{print ""}' ${ref_genome}.fai)
 if [ "$ploidy" == "1" ];
 then
-echo "PLoidy 1"
+echo "Ploidy 1"
 bed_file=${output_dir}/${name}.bed
 awk '{print $1"\t0\t"$2}' ${ref_genome}.fai > ${bed_file}
     # Run DeepVariant using Apptainer
@@ -48,13 +59,13 @@ awk '{print $1"\t0\t"$2}' ${ref_genome}.fai > ${bed_file}
       --reads=${input_bam} \
       --output_vcf=${output_vcf} \
       --output_gvcf=${output_gvcf}  \ 
-     --num_shards=48 \
-     --par_regions_bed ${bed_file} \
+      --num_shards=48 \
+      --par_regions_bed ${bed_file} \
       --intermediate_results_dir "${output_dir}/intermediate_results_dir" 
        fi
 if [ "$ploidy" == "2" ];
 then
-echo "PLoidy 2"
+echo "Ploidy 2"
 apptainer exec \
   --bind ${bam_dir}:/input \
   --bind ${output_dir}:/output \
@@ -65,6 +76,6 @@ apptainer exec \
   --reads=${input_bam} \
   --output_vcf=${output_vcf} \
   --output_gvcf=${output_gvcf}  \ 
-     --num_shards=48 \
+  --num_shards=48 \
   --intermediate_results_dir "${output_dir}/intermediate_results_dir" 
-  fi
+fi

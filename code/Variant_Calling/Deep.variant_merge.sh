@@ -16,12 +16,9 @@ echo "Code Directory: $VC_code"
 echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
 
-ref_genome=${VC_data}/final_assembly/Hesperapis_oraria_2.curatedScaff.clean_sort_rename_nuc.fasta
 cd $VC_code
-cd ../
-code_dir=$(pwd)
-docker_dir=$code_dir/DeepVariant/
-vcf_dir=${VC_results}/4.Calling_V2/DeepVariant/
+GLNexus_dir=${my_softwares}/GLNexus/
+vcf_dir=${VC_results}/4.Calling/DeepVariant/
 output_dir=${VC_results}/5.Merge_Calling/DeepVariant
 mkdir -p ${output_dir}
 # Define the path to the gvcf_list.txt
@@ -43,12 +40,11 @@ cd ${output_dir}
 rm -rf ${output_dir}/GLnexus.DB
 
 apptainer run \
-  ${docker_dir}/glnexus_v1.2.7.sif \
+  ${GLNexus_dir}/glnexus_v1.2.7.sif \
   /usr/local/bin/glnexus_cli \
   --config DeepVariantWGS \
   ${vcf_dir}/*.deepvariant.g.vcf.gz > ${output_dir}/deepvariant.cohort.bcf
 
-  
 
 ml bcftools  
 bcftools convert -O v -o ${output_dir}/deepvariant.cohort.vcf ${output_dir}/deepvariant.cohort.bcf
@@ -56,21 +52,8 @@ bcftools view ${output_dir}/deepvariant.cohort.vcf| bcftools norm -m -any -f ${r
 mkdir -p ${VC_data}/variants/DeepVariant/
 cp ${output_dir}/norm.deepvariant.cohort.vcf ${VC_data}/variants/DeepVariant/temp.vcf
 
-
 bcftools annotate --set-id '%CHROM\_%POS\_%REF\_%FIRST_ALT' ${VC_data}/variants/DeepVariant/temp.vcf > ${VC_data}/variants/DeepVariant/Hesperapis_oraria.vcf
-
 
 grep "female" $meta_data | awk -F "," '{print $1}' > ${VC_data}/variants/DeepVariant/Females.ID
 
-
-
 bcftools view -S ${VC_data}/variants/DeepVariant/Females.ID ${VC_data}/variants/DeepVariant/Hesperapis_oraria.vcf > ${VC_data}/variants/DeepVariant/Females_Hesperapis_oraria.vcf
-
-cd $r_library
-out_dir=${VC_data}/variants/DeepVariant/
-vcf_path=${VC_data}/variants/DeepVariant/Hesperapis_oraria.vcf
-meta=${VC_data}/variants/Samples.Metadata.csv 
-name=Hesperapis_oraria 
-
-ml r/4.4.0
-Rscript $VC_code/scripts/Filter.Het.R $out_dir $vcf_path $meta $name

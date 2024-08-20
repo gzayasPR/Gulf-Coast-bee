@@ -16,7 +16,6 @@ echo "Code Directory: $VC_code"
 echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
 
-ref_genome=${VC_data}/final_assembly/Hesperapis_oraria_2.curatedScaff.clean_sort_rename_nuc.fasta
 
 vcf_dir=${VC_results}/3.5.Intial_calling/
 output_dir=${VC_results}/3.5.Intial_calling/Merged_output/
@@ -33,15 +32,11 @@ ml python
 ml gatk
 gatk  --java-options "-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads=48" GatherVcfs -I $vcf_list -O ${output_dir}/combined.vcf
 ml bcftools
-
-
 bcftools view  ${output_dir}/combined.vcf -H -Oz -o  ${output_dir}/combined.vcf.gz
 
 # Define input and output files
 input_vcf="${output_dir}/combined.vcf"
 output_vcf="${output_dir}/fixed_input.vcf.gz"
-
-
 # Validate and preprocess the VCF file using bcftools
 bcftools view ${input_vcf} | bcftools norm -m -any -f ${ref_genome} -Oz -o ${output_vcf}
 

@@ -19,6 +19,17 @@ ploidy=$4
 output_dir=$5
 my_softwares=$6
 
+
+# Echo the inputs
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "Bam directory: ${bam_dir}"
+echo "Reference Genome: ${ref_genome}"
+echo "Ploidy: ${ploidy}"
+echo "Output Directory: ${output_dir}"
+echo "Softwares Directory: ${my_softwares}"
+
+
 ml python
 ml gatk
 ml samtools

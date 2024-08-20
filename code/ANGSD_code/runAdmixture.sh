@@ -27,7 +27,7 @@ out_dir=${ANGSD_results}/ADMIXTURE
 mkdir -p $out_dir
 
 
-angsd_dir=${my_softwares}/angsd
+angsd_dir=${my_softwares}/angsd/env
 angsd_out=${ANGSD_results}/ANGSD_out
 
 chosen_k=2

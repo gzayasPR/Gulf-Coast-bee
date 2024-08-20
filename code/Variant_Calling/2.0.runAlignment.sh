@@ -60,6 +60,6 @@ for IID in ${trimmed_dir}*_val_1.fq; do
     #Modify the job-name with the sample name
     R1_gz=${trimmed_dir}/${name}_val_1.fq
     R2_gz=${trimmed_dir}/${name}_val_2.fq
-   sbatch --job-name="runAlign_${name}" --output="runAlign_${name}.out" --error="runAlign_${name}.err" ../scripts/alignment.V2.sh ${name} ${trimmed_dir} $R1_gz $R2_gz ${ref_genome} ${output_dir} ${my_softwares}
+ #  sbatch --job-name="runAlign_${name}" --output="runAlign_${name}.out" --error="runAlign_${name}.err" ../scripts/alignment.V2.sh ${name} ${trimmed_dir} $R1_gz $R2_gz ${ref_genome} ${output_dir} ${my_softwares}
 done
 

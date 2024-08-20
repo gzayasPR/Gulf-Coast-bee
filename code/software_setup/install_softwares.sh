@@ -11,86 +11,80 @@ fi
 mkdir -p ${my_softwares}
 cd ${my_softwares}
 
-# Set environment variables
-export PATH=${my_softwares}/bin:$PATH
-export LD_LIBRARY_PATH=${my_softwares}/lib:$LD_LIBRARY_PATH
-export CFLAGS="-I${my_softwares}/include"
-export LDFLAGS="-L${my_softwares}/lib"
-export PKG_CONFIG_PATH=${my_softwares}/lib/pkgconfig
-
-
-cd ${my_softwares}
 # Install zlib
+if [ -d "zlib-1.3.1" ]; then
+  rm -rf zlib-1.3.1
+fi
 wget http://www.zlib.net/zlib-1.3.1.tar.gz
 tar -xzvf zlib-1.3.1.tar.gz
 cd zlib-1.3.1
 ./configure --prefix=${my_softwares}
-make
-make install
+make && make install || { echo "zlib installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
 # Install bzip2 with -fPIC
+if [ -d "bzip2-1.0.8" ]; then
+  rm -rf bzip2-1.0.8
+fi
 wget https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
 tar -xzvf bzip2-1.0.8.tar.gz
 cd bzip2-1.0.8
 make CFLAGS="-fPIC"
-make install PREFIX=${my_softwares}
+make install PREFIX=${my_softwares} || { echo "bzip2 installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
 # Install xz
+if [ -d "xz-5.2.5" ]; then
+  rm -rf xz-5.2.5
+fi
 wget https://tukaani.org/xz/xz-5.2.5.tar.gz
 tar -xzvf xz-5.2.5.tar.gz
 cd xz-5.2.5
 ./configure --prefix=${my_softwares}
-make
-make install
+make && make install || { echo "xz installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
 # Install OpenSSL (required for curl with TLS support)
+if [ -d "openssl-1.1.1l" ]; then
+  rm -rf openssl-1.1.1l
+fi
 wget https://www.openssl.org/source/openssl-1.1.1l.tar.gz
 tar -xzvf openssl-1.1.1l.tar.gz
 cd openssl-1.1.1l
 ./config --prefix=${my_softwares} --openssldir=${my_softwares}/ssl
-make
-make install
+make && make install || { echo "OpenSSL installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
 # Install curl with OpenSSL
+if [ -d "curl-7.79.1" ]; then
+  rm -rf curl-7.79.1
+fi
 wget https://curl.se/download/curl-7.79.1.tar.gz
 tar -xzvf curl-7.79.1.tar.gz
 cd curl-7.79.1
 ./configure --prefix=${my_softwares} --with-zlib=${my_softwares} --with-ssl=${my_softwares}
-make
-make install
+make && make install || { echo "curl installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
+# Install htslib
+if [ -d "htslib" ]; then
+  rm -rf htslib
+fi
 git clone https://github.com/samtools/htslib.git
 cd htslib
 git submodule update --init --recursive
 autoreconf -i
-./configure --prefix=${my_softwares} --with-zlib=${my_softwares} --with-bzip2=${my_softwares} --with-lzma=${my_softwares} --with-curl=${my_softwares}
-make
-make install
+./configure --prefix=${my_softwares} \
+            --with-zlib=${my_softwares} \
+            --with-bzip2=${my_softwares} \
+            --with-lzma=${my_softwares} \
+            --with-curl=${my_softwares}
+make && make install || { echo "htslib installation failed"; exit 1; }
 cd ..
 
-cd ${my_softwares}
-# Clone and compile ANGSD
-git clone https://github.com/ANGSD/angsd.git
-cd angsd
-# Modify the Makefile for ANGSD to use local installations
-sed -i "1iCXXFLAGS += -I${my_softwares}/include\nLDFLAGS += -L${my_softwares}/lib\nLDLIBS += -L${my_softwares}/lib -lbz2 -lcurl" Makefile
-g++ -o angsd *.o${my_softwares}/htslib/libhts.a -L${my_softwares}//lib -lbz2 -lcurl -lz -lm -llzma -lpthread -lcrypto
-
-# Compile ANGSD with explicit library paths
-make HTSSRC=${my_softwares}/htslib/ CXXFLAGS="-I${my_softwares}/include" LDFLAGS="-L${my_softwares}/lib" LDLIBS="-L${my_softwares}/lib -lbz2 -lcurl"
-echo 'export LD_LIBRARY_PATH=${my_softwares}/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
-source ~/.bashrc
-
+wget https://raw.githubusercontent.com/ANGSD/angsd/master/misc/ngsadmix32.cpp
+g++ ngsadmix32.cpp -O3 -lpthread -lz -o NGSadmix
+cd ..
 
 # Clone ngsRelate
 cd ${my_softwares}
@@ -105,12 +99,4 @@ make HTSSRC=${my_softwares}/htslib/ CXXFLAGS="-I${my_softwares}/include" LDFLAGS
 
 # Compile ngsRelate with explicit library paths
 g++ -O3 -o ngsRelate *.o ${my_softwares}/htslib/libhts.a -L${my_softwares}/lib -lz -lm -lbz2 -llzma -lpthread -lcurl -lcrypto -D__WITH_BCF__
-
-# Install KING
-cd ${my_softwares}
-mkdir king
-cd king
-wget https://www.kingrelatedness.com/KINGcode.tar.gz
-tar -xzvf KINGcode.tar.gz
-c++ -lm -lz -O2 -fopenmp -o king *.cpp
 

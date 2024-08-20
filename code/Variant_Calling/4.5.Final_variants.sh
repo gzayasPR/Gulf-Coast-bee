@@ -16,23 +16,23 @@ echo "Code Directory: $VC_code"
 echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
 
-ref_genome=${VC_data}/final_assembly/Hesperapis_oraria_2.curatedScaff.clean_sort_rename_nuc.fasta
 
-clean_dir=${VC_results}/4.Calling_V2/GATK/
-output_dir=${VC_results}/4.5.Final_Calling_V2/
+clean_dir=${VC_results}/4.Calling/GATK/
+output_dir=${VC_results}/4.5.Final_Calling/
 mkdir -p ${output_dir}
 # Define the path to the gvcf_list.txt
 gvcf_list=${output_dir}/gvcf_list.txt
 
 # Remove existing gvcf_list.txt if it exists
 rm -f $gvcf_list
+rm ${output_dir}/genome_intervals_*.bed 
 ml bcftools
 ml python
 # Iterate over each GVCF file and add to the list
 for IID in ${clean_dir}/*.g.vcf.gz; do
   name=$(basename ${IID} .g.vcf.gz)
    echo -e "${name}\t${IID}" >> $gvcf_list
-   #bcftools index -f ${IID}
+   bcftools index -f ${IID}
 done
 rm -f ${output_dir}/*.bed
 # Generate the interval file (genome_intervals.bed or genome_intervals.list)
@@ -74,7 +74,6 @@ split_bed_by_size() {
 
 # Split the BED file based on cumulative size
 split_bed_by_size ${output_dir}/genome_intervals.bed ${output_dir}/genome_intervals $size_threshold
-rm ${output_dir}/genome_intervals_chunk_chunk_0.bed
 rm ${output_dir}/genome_intervals_chunk_0.bed
 mkdir -p ${VC_code}/genomicsdb_output
 
@@ -88,7 +87,7 @@ for chunk in ${output_dir}/genome_intervals_*.bed; do
         chunk_output_dir=${output_dir}/genomicsdb_$(basename $chunk .bed)
         # Combine GVCF files using GenomicsDBImport
         cd ${VC_code}/genomicsdb_output 
-        sbatch --job-name="chunk_${name}" --output="chunk_${name}.out" --error="chunk_${name}.err" ../scripts/joint_genotyping.sh  $name $chunk_output_dir $chunk $gvcf_list ${ref_genome} ${output_dir} ${VC_code}/VC_project_env.sh
-    } 
+        sbatch --job-name="chunk_${name}" --output="chunk_${name}.out" --error="chunk_${name}.err" ../scripts/joint_genotyping.sh  $name $chunk_output_dir $chunk $gvcf_list ${ref_genome} ${output_dir} ${my_softwares} 
+        }
 done
 

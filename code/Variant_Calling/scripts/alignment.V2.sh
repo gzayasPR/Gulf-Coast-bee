@@ -25,6 +25,17 @@ R2=$4
 ref_genome=$5
 output_dir=$6
 my_softwares=$7
+
+# Echo the inputs
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "Trimmed Directory: ${trimmed_dir}"
+echo "Forward File: ${R1}"
+echo "Reverse File: ${R2}"
+echo "Reference Genome: ${ref_genome}"
+echo "Output Directory: ${output_dir}"
+echo "Softwares Directory: ${my_softwares}"
+
 # Unzip fastq.gz files
 # Run bwa mem with 48 threads
 echo "Start BWA MEM"

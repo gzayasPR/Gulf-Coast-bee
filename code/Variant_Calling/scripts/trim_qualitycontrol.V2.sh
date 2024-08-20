@@ -16,6 +16,16 @@ R1=$2
 R2=$3
 output_dir=$4
 my_softwares=$5
+
+# Echo the inputs
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "R1 File: ${R1}"
+echo "R2 File: ${R2}"
+echo "Output Directory: ${output_dir}"
+echo "Softwares Directory: ${my_softwares}"
+
+
 ml fastqc
 fastqc -t 48  ${R1} ${R2} -o ${output_dir}/pre_trim
 

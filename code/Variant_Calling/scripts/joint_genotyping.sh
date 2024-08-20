@@ -17,18 +17,19 @@ chunk=$3
 gvcf_list=$4 
 ref_genome=$5
 output_dir=$6
-paths=$7
+my_softwares=$7
 
-echo "Parameters used "
-echo "Chunk = $name 
-Chunk Directory = $chunk_output_dir
-Reference Genome = $ref_genome
-Output Directory = $output_dir"
-echo "Bed Intervals"
-cat ${chunk}
-echo "Samples used"
-cat $gvcf_list
-source $paths
+
+# Echo the inputs
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "Chunk Output Directory: ${chunk_output_dir}"
+echo "Chunk: ${chunk}"
+echo "GVCF List: ${gvcf_list}"
+echo "Reference Genome: ${ref_genome}"
+echo "Output Directory: ${output_dir}"
+echo "Softwares Directory: ${my_softwares}"
+
 # Load necessary modules
 ml python
 ml gatk
@@ -57,7 +58,7 @@ gatk --java-options "-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads=8" VariantF
    -R ${ref_genome} \
     -V ${output_dir}/${name}.vcf \
     -O ${output_dir}/filtered_${name}.vcf \
-#   --filter-expression "QUAL < 30" --filter-name "QUAL_FAIL" --filter-expression "DP < 11" --filter-name "DP_FAIL" \
+   --filter-expression "QUAL < 30" --filter-name "QUAL_FAIL" --filter-expression "DP < 11" --filter-name "DP_FAIL" \
    --filter-expression "QD < 2.0 || MQ < 40.0 || MQRankSum < -12.4 || ReadPosRankSum < -8.0 || FS > 60.0 || SOR > 3.0" --filter-name  "SNP_HARD_FAIL"
 echo "Finished VariantFiltration"
 ml bcftools
@@ -81,9 +82,3 @@ gatk --java-options "-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads=8" SortVcf 
     -O ${output_dir}/sorted_${name}.vcf
 echo "Finished SortVcf"
 echo "$name processed final vcf is at ${output_dir}/sorted_${name}.vcf"
-
-
-
-
-
-

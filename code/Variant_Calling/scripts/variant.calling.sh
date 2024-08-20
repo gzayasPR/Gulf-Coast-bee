@@ -19,6 +19,14 @@ known_vcf=$4
 ploidy=$5
 output_dir=$6/GATK
 
+echo "Inputs provided:"
+echo "Sample Name: ${name}"
+echo "Bam directory: ${bam_dir}"
+echo "Reference Genome: ${ref_genome}"
+echo "Known VCF: ${known_vcf}"
+echo "Ploidy: ${ploidy}"
+echo "Output Directory: ${output_dir}"
+
 mkdir -p ${output}
 ml gatk
 ml samtools

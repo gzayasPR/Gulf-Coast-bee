@@ -16,7 +16,6 @@ echo "Project Directory: $proj_dir"
 echo "Code Directory: $VC_code"
 echo "Data Directory: $VC_data"
 echo "Results Directory: $VC_results"
-echo "Conda Enviroment: $VC_conda"
 short_reads_meta_data=${meta_data}
 # Create a directory for Quality Control within results
 mkdir -p ${VC_results}/1.Trim_QC
@@ -33,7 +32,8 @@ dos2unix $short_reads_meta_data
 
 awk -F',' 'NR==1 {for (i=1; i<=NF; i++) {if ($i=="BioSample") b=i; if ($i=="fq1") f1=i; if ($i=="fq2") f2=i}} NR>1 {print $b","$f1","$f2}' "$short_reads_meta_data" > ${output_dir}/reads_columns.csv
 
-
+echo "Contents of reads_columns.csv:"
+cat "${output_dir}/reads_columns.csv"
 # Read the CSV file line by line
 while IFS=',' read -r BioSample fq1 fq2
 do
@@ -48,6 +48,6 @@ do
         cd ${VC_code}/1.QC_output/
         name=$BioSample
     # Modify the job-name with the sample name
-    sbatch --job-name="runQC_${name}" --output="runQC_${name}.out" --error="runQC_${name}.err" ../scripts/trim_qualitycontrol.V2.sh ${name} $R1 $R2 ${output_dir} $my_softwares
+   # sbatch --job-name="runQC_${name}" --output="runQC_${name}.out" --error="runQC_${name}.err" ../scripts/trim_qualitycontrol.V2.sh ${name} $R1 $R2 ${output_dir} $my_softwares
     fi
 done < "${output_dir}/reads_columns.csv"

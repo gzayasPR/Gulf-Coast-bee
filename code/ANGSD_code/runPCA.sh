@@ -30,7 +30,7 @@ mkdir -p $out_dir
 angsd_dir=${my_softwares}/angsd
 angsd_out=${ANGSD_results}/ANGSD_out
 
-pcangus_dir=/home/gabriel.zayas/.conda/envs/PCAngsd
+pcangus_dir=${my_softwares}/pcangsd/env
 
 mkdir -p ${ANGSD_code}/pca_out/
 cd ${ANGSD_code}/pca_out/

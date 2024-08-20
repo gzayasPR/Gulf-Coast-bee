@@ -70,11 +70,20 @@ else
   conda activate "${my_softwares}/qualimap/env"
 fi
 
-# Install MultiQC in a new Conda environment
+# Install Qualimap in a new Conda environment
+if [ -d "${my_softwares}/angsd/env" ]; then
+  echo "Qualimap environment already exists."
+  conda activate "${my_softwares}/angsd/env"
+else
+  conda create --prefix "${my_softwares}/angsd/env" -c bioconda angsd -y
+  conda activate "${my_softwares}/angsd/env"
+fi
+
+# Install multiqc in a new Conda environment
 if [ -d "${my_softwares}/multiqc/env" ]; then
-  echo "MultiQC environment already exists."
+  echo "Qualimap environment already exists."
   conda activate "${my_softwares}/multiqc/env"
 else
-  conda create --prefix "${my_softwares}/multiqc/env" -c bioconda multiqc -y
+  conda create --prefix "${my_softwares}/multiqc/env" -c bioconda angsd -y
   conda activate "${my_softwares}/multiqc/env"
 fi
