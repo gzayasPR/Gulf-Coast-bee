@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --account=beenome100
+#SBATCH --output=runAlign_%j.out
+#SBATCH --error=runAlign_%j.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=gzayas97@ufl.edu
+#SBATCH --time=48:00:00
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --mem-per-cpu=8gb
+source LR_VC_project_env.sh
+# Define project directories
+echo "Project Directory: $proj_dir"
+echo "Code Directory: $LR_VC_code"
+echo "Data Directory: $LR_VC_data"
+echo "Results Directory: $LR_VC_results"
+reads_dir=/project/90daydata/beenome100/hesperapis_oraria_genomics/pacbio_filtered_reads/
+
+
+cd ${LR_VC_results}/
+mkdir -p ${LR_VC_results}/Alignment/
+output_dir=${LR_VC_results}/Alignment/
+mkdir -p ${LR_VC_code}/Alignment_output/
+# Iterate over each file ending with "_R1.fastq.gz" in trimmed dir
+for IID in ${reads_dir}*.hifi_reads.fcsfilt.fastq.gz; do
+    # Extract the base filename without the suffix "_R1.fastq.gz"
+    name=$(basename ${IID} .hifi_reads.fcsfilt.fastq.gz)
+    echo ${name}
+    cd ${LR_VC_code}/Alignment_output/
+    #Modify the job-name with the sample name
+    reads=${IID}
+  sbatch --job-name="runAlign_${name}" --output="runAlign_${name}.out" --error="runAlign_${name}.err" ../scripts/alignment.V2.sh ${name} ${reads}  ${ref_genome} ${output_dir}
+done
+
