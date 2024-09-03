@@ -70,9 +70,9 @@ else
   conda activate "${my_softwares}/qualimap/env"
 fi
 
-# Install Qualimap in a new Conda environment
+# Install angsd in a new Conda environment
 if [ -d "${my_softwares}/angsd/env" ]; then
-  echo "Qualimap environment already exists."
+  echo "angsd environment already exists."
   conda activate "${my_softwares}/angsd/env"
 else
   conda create --prefix "${my_softwares}/angsd/env" -c bioconda angsd -y
@@ -81,9 +81,33 @@ fi
 
 # Install multiqc in a new Conda environment
 if [ -d "${my_softwares}/multiqc/env" ]; then
-  echo "Qualimap environment already exists."
+  echo "multiqc environment already exists."
   conda activate "${my_softwares}/multiqc/env"
 else
-  conda create --prefix "${my_softwares}/multiqc/env" -c bioconda angsd -y
+  conda create --prefix "${my_softwares}/multiqc/env" -c bioconda multiqc -y
   conda activate "${my_softwares}/multiqc/env"
 fi
+
+
+
+# Install fastqc in a new Conda environment
+if [ -d "${my_softwares}/fastqc/env" ]; then
+  echo "fastqc environment already exists."
+  conda activate "${my_softwares}/fastqc/env"
+else
+  conda create --prefix "${my_softwares}/fastqc/env" -c bioconda fastqc -y
+  conda activate "${my_softwares}/fastqc/env"
+fi
+
+
+
+# Install plinkv1.9 in a new Conda environment
+if [ -d "${my_softwares}/plinkv1.9 /env" ]; then
+  echo "fastqc environment already exists."
+  conda activate "${my_softwares}/plinkv1.9/env"
+else
+  conda create --prefix "${my_softwares}/plinkv1.9/env" -c bioconda sjnewhouse::plink -y
+  conda activate "${my_softwares}/plinkv1.9/env"
+fi
+
+

@@ -30,7 +30,7 @@ mkdir -p $out_dir
 angsd_dir=${my_softwares}/angsd/env
 angsd_out=${ANGSD_results}/ANGSD_out
 
-chosen_k=2
+chosen_k=3
 reps=10
 ks=5
 

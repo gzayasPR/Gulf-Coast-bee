@@ -41,12 +41,15 @@ ml miniconda3
 conda activate $angsd_dir
 angsd sites index ${out_dir}/sites.txt
 out_dir_pop2=${ANGSD_results}/Fst/ALxFL/
+ml samtools
+# Index the reference genome if not already indexed
+samtools faidx ${ref_genome}
 mkdir -p $out_dir_pop2
 grep "USA-FL_Escambia_co" ${meta_data} | awk -F "," '{print $1}' > ${out_dir_pop2}/pop1.names
 
 grep -f ${out_dir_pop2}/pop1.names ${bam_filelist} > ${out_dir_pop2}/pop1.bam.filelist
 
-grep "USA-AL_Baldwin_co" ${meta_data} | awk -F "," '{print $1}' > ${out_dir_pop2}/${out_dir}/pop2.names
+grep "USA-AL_Baldwin_co" ${meta_data} | awk -F "," '{print $1}' > ${out_dir_pop2}/pop2.names
 grep -f ${out_dir_pop2}/pop2.names ${bam_filelist} > ${out_dir_pop2}/pop2.bam.filelist
 
 

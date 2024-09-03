@@ -100,3 +100,18 @@ make HTSSRC=${my_softwares}/htslib/ CXXFLAGS="-I${my_softwares}/include" LDFLAGS
 # Compile ngsRelate with explicit library paths
 g++ -O3 -o ngsRelate *.o ${my_softwares}/htslib/libhts.a -L${my_softwares}/lib -lz -lm -lbz2 -llzma -lpthread -lcurl -lcrypto -D__WITH_BCF__
 
+
+
+cd ${my_softwares}
+git clone https://github.com/diriano/ploidyNGS.git
+ml python
+pip install --user --upgrade pip
+pip install --user virtualenv
+export PATH="$PATH:$HOME/.local/bin"
+echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+source ~/.bashrc
+
+cd ploidyNGS
+virtualenv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
