@@ -50,7 +50,7 @@ Ensure that the following software and tools are installed on your system:
 Before running the setup script, you need to configure certain metadata and reference genome variables. These adjustments are essential for aligning the analysis with your specific dataset.
 
 - **Reference Genome Path:** 
-  - Update the path to the reference genome file in the setup scripts located in the respective directories (e.g., `code/ANGSD_code/ANGSD_project_env.sh`, `code/Variant_Calling/VC_project_env.sh`).
+  - Update the path to the reference genome file in the setup scripts located in the`Setup.sh`).
   - Example:
     ```bash
     ref_genome="/path/to/your/reference/genome.fasta"
