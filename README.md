@@ -39,16 +39,35 @@ Ensure that the following software and tools are installed on your system:
 - **Other dependencies** as listed in the `software_setup/` directory.
 
 ### Setup
-1. Clone this repository:
+
+### 1. Clone this repository:
+   ```bash
+   git clone https://github.com/gzayasPR/Gulf-Coast-bee.git
+   cd Gulf-Coast-bee
+   ```
+
+### 2. Update Metadata and Reference Genome Variables:
+Before running the setup script, you need to configure certain metadata and reference genome variables. These adjustments are essential for aligning the analysis with your specific dataset.
+
+- **Reference Genome Path:** 
+  - Update the path to the reference genome file in the setup scripts located in the respective directories (e.g., `code/ANGSD_code/ANGSD_project_env.sh`, `code/Variant_Calling/VC_project_env.sh`).
+  - Example:
     ```bash
-    git clone https://github.com/gzayasPR/Gulf-Coast-bee.git
-    cd Gulf-Coast-bee
+    ref_genome="/path/to/your/reference/genome.fasta"
     ```
 
-2. Run the setup script to install necessary software:
+- **Metadata Variables:**
+  - Ensure that metadata variables such as sample names, population groups, and other identifiers are correctly set in the analysis scripts.
+  - Example:
     ```bash
-      bash Setup.sh
+    metadata="/path/to/your/reference/your_metadata.csv"
     ```
+
+### 3. Run the setup script to install necessary software:
+   ```bash
+   bash Setup.sh
+   ```
+
 
 ## Usage
 Each directory contains specific Jupyter notebooks (`.ipynb`) that should be run for the different analyses. Refer to these notebooks for instructions on executing the workflows.
