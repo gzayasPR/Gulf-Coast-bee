@@ -72,28 +72,5 @@ Before running the setup script, you need to configure certain metadata and refe
 ## Usage
 Each directory contains specific Jupyter notebooks (`.ipynb`) that should be run for the different analyses. Refer to these notebooks for instructions on executing the workflows.
 
-### Running ANGSD Analyses
-```bash
-cd code/ANGSD_code/
-jupyter notebook ANGSD_Workflow.ipynb
-```
-
-### Running Long-read Variant Calling
-```bash
-cd code/Long_read_Variant_Calling/
-jupyter notebook Long_Reads_Variant_Calling_Workflow.ipynb
-```
-
-### Running Population Genomics Analyses
-```bash
-cd code/Population_Genomics/
-jupyter notebook Population_Genomics_Workflow.ipynb
-```
-
-### Running Variant Calling
-```bash
-cd code/Variant_Calling/
-jupyter notebook Variant_Calling_Workflow.ipynb
-```
 
 
