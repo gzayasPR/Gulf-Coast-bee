@@ -9,3 +9,5 @@ code/**/*.out
 code/**/*_output/
 
 .ipynb_checkpoints/ 
+code/**/*.log
+code.bak.*/

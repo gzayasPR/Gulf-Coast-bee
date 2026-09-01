@@ -1,0 +1,150 @@
+[1mdiff --git a/code/Population_Genomics/scripts/Hetero.V3.R b/code/Population_Genomics/scripts/Hetero.V3.R[m
+[1mindex 45eae73..b842ef6 100644[m
+[1m--- a/code/Population_Genomics/scripts/Hetero.V3.R[m
+[1m+++ b/code/Population_Genomics/scripts/Hetero.V3.R[m
+[36m@@ -1,76 +1,121 @@[m
+[31m-library(tidyverse)[m
+[31m-rm(list=ls())[m
+[32m+[m[32m#!/usr/bin/env Rscript[m
+ [m
+[31m-args<-commandArgs(TRUE)[m
+[31m-# Set project directory and paths[m
+[31m-out.dir <- args[1][m
+[31m-het.path<- args[2][m
+[31m-meta.path <- args[3][m
+[32m+[m[32msuppressPackageStartupMessages({[m
+[32m+[m[32m  library(tidyverse)[m
+[32m+[m[32m})[m
+[32m+[m
+[32m+[m[32mrm(list = ls())[m
+ [m
+[32m+[m[32m# ----------------- Args -----------------[m
+[32m+[m[32m# 1) out.dir    : output directory (also working dir)[m
+[32m+[m[32m# 2) het.path   : combined .het file => ${out_dir}/${name}.het[m
+[32m+[m[32m# 3) meta.path  : metadata CSV (first col is BioSample)[m
+[32m+[m[32margs <- commandArgs(TRUE)[m
+[32m+[m[32mif (length(args) < 3) {[m
+[32m+[m[32m  stop("Usage: Rscript Hetero.V3.R <out.dir> <het.path> <meta.path>\n")[m
+[32m+[m[32m}[m
+[32m+[m[32mout.dir   <- args[1][m
+[32m+[m[32mhet.path  <- args[2][m
+[32m+[m[32mmeta.path <- args[3][m
+ [m
+ setwd(out.dir)[m
+[31m-# Read heterozygosity data[m
+[31m-het_data <- read.table(het.path, header=TRUE)[m
+[31m-names(het_data )[1] <- "BioSample"[m
+[31m-head(het_data)[m
+[31m-het_data$Observed_Heterozygosity <-  ((het_data$N_SITES - het_data$O.HOM.) / het_data$N_SITES)*100[m
+[31m-het_data$Expected_Heterozygosity <- ((het_data$N_SITES - het_data$E.HOM.)  / het_data$N_SITES)*100[m
+[31m-# Read metadata[m
+[31m-metadata <- read.csv(meta.path)[m
+[31m-names(metadata )[1] <- "BioSample"[m
+ [m
+[32m+[m[32m# ----------------- Load data -----------------[m
+[32m+[m[32m# vcftools --het header is: INDV  O(HOM)  E(HOM)  N_SITES  F[m
+[32m+[m[32mhet_data <- read.table(het.path, header = TRUE, sep = "", stringsAsFactors = FALSE, check.names = FALSE)[m
+[32m+[m[32m# Standardize sample ID column name to 'BioSample'[m
+[32m+[m[32m# (vcftools column is 'INDV'; if you've already changed it, this keeps it consistent)[m
+[32m+[m[32mif ("INDV" %in% names(het_data)) names(het_data)[names(het_data) == "INDV"] <- "BioSample"[m
+[32m+[m[32mif ("BioSample" %in% names(het_data) == FALSE) stop("Could not find 'INDV' or 'BioSample' in het file.")[m
+[32m+[m
+[32m+[m[32m# Compute observed/expected heterozygosity (%)[m
+[32m+[m[32m# Columns from vcftools are typically named with punctuation: 'O(HOM)' -> 'O.HOM.' when read with check.names=TRUE[m
+[32m+[m[32m# We used check.names=FALSE, so access with backticks to be safe.[m
+[32m+[m[32mrequired_cols <- c("N_SITES", "O(HOM)", "E(HOM)")[m
+[32m+[m[32mif (!all(required_cols %in% names(het_data))) {[m
+[32m+[m[32m  stop("Expected columns not present in het file: ", paste(setdiff(required_cols, names(het_data)), collapse = ", "))[m
+[32m+[m[32m}[m
+[32m+[m[32mhet_data <- het_data %>%[m
+[32m+[m[32m  mutate([m
+[32m+[m[32m    Observed_Heterozygosity = ((N_SITES - `O(HOM)`) / N_SITES) * 100,[m
+[32m+[m[32m    Expected_Heterozygosity = ((N_SITES - `E(HOM)`) / N_SITES) * 100[m
+[32m+[m[32m  )[m
+[32m+[m
+[32m+[m[32m# Inbreeding coefficient column 'F'[m
+[32m+[m[32mif (!"F" %in% names(het_data)) stop("Column 'F' not found in het file.")[m
+ [m
+[31m-metadata <- metadata %>%[m
+[31m-  mutate(Location = recode(Location,[m
+[31m-                           "USA-AL_Baldwin_co" = "AL",[m
+[31m-                           "USA-FL_Escambia_co" = "FL"))[m
+[31m-# Merge heterozygosity data with metadata[m
+[31m-merged_data <- merge(het_data, metadata, by='BioSample')[m
+[31m-merged_data <- merged_data %>% filter(Sex == "female")[m
+[31m-# Plot observed vs expected heterozygosity[m
+[32m+[m[32m# ----------------- Metadata -----------------[m
+[32m+[m[32mmetadata <- read.csv(meta.path, stringsAsFactors = FALSE, check.names = FALSE)[m
+[32m+[m[32m# Standardize metadata sample ID column to 'BioSample'[m
+[32m+[m[32mif (!"BioSample" %in% names(metadata)) names(metadata)[1] <- "BioSample"[m
+ [m
+[31m-# Plot the ratios with boxplot separated by location[m
+[31m-plot <- ggplot(merged_data, aes(x = Location, y = Observed_Heterozygosity, fill = Location)) +[m
+[31m-  geom_boxplot(outlier.shape = NA) +[m
+[31m-  geom_jitter(width = 0.2, size = 1, alpha = 0.6) +[m
+[31m-  labs(title = "Observed Heterozygosity by Location",[m
+[31m-       x = "Location",[m
+[31m-       y = "Observed Heterozygosity (%)") +[m
+[31m-  theme_bw(base_size = 15) +[m
+[31m-  theme([m
+[31m-    axis.text.x = element_text(angle = 45, hjust = 1),[m
+[31m-    panel.grid.major = element_blank(),[m
+[31m-    panel.grid.minor = element_blank(),[m
+[31m-    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),[m
+[31m-    legend.position = "none"[m
+[31m-  ) +[m
+[31m-  scale_fill_manual(values = c("AL" = "#4CAF50", "FL" = "#2196F3")) +[m
+[31m-  theme(panel.background = element_rect(fill = "white", color = "white"))[m
+[32m+[m[32m# Optional: recode location labels[m
+[32m+[m[32mif ("Location" %in% names(metadata)) {[m
+[32m+[m[32m  metadata <- metadata %>%[m
+[32m+[m[32m    mutate(Location = dplyr::recode(Location,[m
+[32m+[m[32m                                    "USA-AL_Baldwin_co" = "AL",[m
+[32m+[m[32m                                    "USA-FL_Escambia_co" = "FL"))[m
+[32m+[m[32m}[m
+ [m
+[31m-# Save the plot[m
+[31m-ggsave("Observed Heterozygosity_boxplot.png", plot, width = 11, height = 6)[m
+[32m+[m[32m# ----------------- Merge & filter -----------------[m
+[32m+[m[32mmerged_data <- het_data %>%[m
+[32m+[m[32m  inner_join(metadata, by = "BioSample")[m
+ [m
+[32m+[m[32m# Keep only females if 'Sex' is present[m
+[32m+[m[32mif ("Sex" %in% names(merged_data)) {[m
+[32m+[m[32m  merged_data <- merged_data %>% filter(Sex == "female")[m
+[32m+[m[32m}[m
+ [m
+[32m+[m[32m# ----------------- Plots -----------------[m
+[32m+[m[32m# Observed heterozygosity by location[m
+[32m+[m[32mif ("Location" %in% names(merged_data)) {[m
+[32m+[m[32m  p_obs <- ggplot(merged_data, aes(x = Location, y = Observed_Heterozygosity, fill = Location)) +[m
+[32m+[m[32m    geom_boxplot(outlier.shape = NA) +[m
+[32m+[m[32m    geom_jitter(width = 0.2, size = 1.3, alpha = 0.7) +[m
+[32m+[m[32m    labs(title = "Observed Heterozygosity by Location",[m
+[32m+[m[32m         x = "Location", y = "Observed Heterozygosity (%)") +[m
+[32m+[m[32m    theme_bw(base_size = 15) +[m
+[32m+[m[32m    theme(axis.text.x = element_text(angle = 45, hjust = 1),[m
+[32m+[m[32m          panel.grid.major = element_blank(),[m
+[32m+[m[32m          panel.grid.minor = element_blank(),[m
+[32m+[m[32m          plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),[m
+[32m+[m[32m          legend.position = "none") +[m
+[32m+[m[32m    scale_fill_manual(values = c("AL" = "#4CAF50", "FL" = "#2196F3")) +[m
+[32m+[m[32m    theme(panel.background = element_rect(fill = "white", color = "white"))[m
+[32m+[m[32m  ggsave(file.path(out.dir, "Observed_Heterozygosity_byLocation.png"), p_obs, width = 11, height = 6, dpi = 300)[m
+ [m
+[31m-# Plot the ratios with boxplot separated by location[m
+[31m-plot <- ggplot(merged_data, aes(x = Location, y = Expected_Heterozygosity, fill = Location)) +[m
+[31m-  geom_boxplot(outlier.shape = NA) +[m
+[31m-  geom_jitter(width = 0.2, size = 1, alpha = 0.6) +[m
+[31m-  labs(title = "Expected Heterozygosity by Location",[m
+[31m-       x = "Location",[m
+[31m-       y = "Expected Heterozygosity (%)") +[m
+[31m-  theme_bw(base_size = 15) +[m
+[31m-  theme([m
+[31m-    axis.text.x = element_text(angle = 45, hjust = 1),[m
+[31m-    panel.grid.major = element_blank(),[m
+[31m-    panel.grid.minor = element_blank(),[m
+[31m-    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),[m
+[31m-    legend.position = "none"[m
+[31m-  ) +[m
+[31m-  scale_fill_manual(values = c("AL" = "#4CAF50", "FL

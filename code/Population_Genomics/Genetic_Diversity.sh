@@ -22,10 +22,10 @@ export LD_LIBRARY_PATH=${my_softwares}/lib:$LD_LIBRARY_PATH
 export CFLAGS="-I${my_softwares}/include"
 export LDFLAGS="-L${my_softwares}/lib"
 
-variant_caller=GATK
+variant_caller=DeepVariant
 out_dir=${PG_results}/Genetic_Diversity/${variant_caller}
 vcf_file=${PG_data}/variants/${variant_caller}/Females_Hesperapis_oraria.vcf 
-meta_data=${PG_data}/variants/Samples.Metadata.csv
+# meta_data=${PG_data}/variants/Samples.Metadata.csv
 name=Hesperapis_oraria_Hetero
 king=${my_softwares}/king
 ngsRelate_dir=${my_softwares}/ngsRelate
@@ -71,13 +71,6 @@ vcftools --vcf ${out_dir}/AL_site_filtered.recode.vcf --het --out ${out_dir}/AL_
 bcftools query -l ${out_dir}/FL_site_filtered.recode.vcf > ${out_dir}/FL.pop_info
 bcftools query -l ${out_dir}/AL_site_filtered.recode.vcf > ${out_dir}/AL.pop_info
 
-
-$ngsRelate_dir/ngsRelate/ngsRelate -h ${out_dir}/FL_site_filtered.recode.vcf -n $(wc -l  ${out_dir}/FL.pop_info) -F 1 -T GT -O ${out_dir}/inbreeding.FL
-$ngsRelate_dir/ngsRelate/ngsRelate -h ${out_dir}/AL_site_filtered.recode.vcf -n $(wc -l ${out_dir}/AL.pop_info) -F 1 -T GT -O ${out_dir}/inbreeding.AL
-
-
-( cat ${out_dir}/AL.pop_info && cat ${out_dir}/FL.pop_info ) > ${out_dir}/pop.info
-( cat ${out_dir}/inbreeding.AL && sed '1d' ${out_dir}/inbreeding.FL ) > ${out_dir}/inbreeding
 cd $r_library 
-ml r/4.4.0
+ml r/4.4.3 
 Rscript $PG_code/scripts/Hetero.V3.R ${out_dir}/ ${out_dir}/${name}.het ${meta_data}
